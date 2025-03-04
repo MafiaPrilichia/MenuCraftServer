@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="27012025-180455" author="mi.korotkov">
+        <createTable tableName="event">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="theme" type="VARCHAR(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="event_date" type="TIMESTAMP">
+                <constraints nullable="true" />
+            </column>
+            <column name="location" type="VARCHAR(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="true" />
+            </column>
+            <column name="guests" type="INTEGER">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="true" />
+            </column>
+            <column name="owner_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="event" indexName="idx_event_name">
+            <column name="name" />
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="04022025-1652" author="mi.korotkov">
+        <createTable tableName="user">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="refresh_token" type="varchar(512)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="event"
+                baseColumnNames="owner_id"
+                referencedTableName="user"
+                referencedColumnNames="id"
+                constraintName="fk_event_owner"
+        />
+
+        <createTable tableName="event_editors">
+            <column name="event_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="event_editors"
+                baseColumnNames="event_id"
+                referencedTableName="event"
+                referencedColumnNames="id"
+                constraintName="fk_event_editors_event"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="event_editors"
+                baseColumnNames="user_id"
+                referencedTableName="user"
+                referencedColumnNames="id"
+                constraintName="fk_event_editors_user"
+        />
+    </changeSet>
+
+</databaseChangeLog>

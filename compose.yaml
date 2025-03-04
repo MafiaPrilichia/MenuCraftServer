@@ -1,0 +1,22 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"  # Пробрасываем порт приложения на хост
+    volumes:
+      - ./target:/app  # Монтируем папку target, чтобы приложение использовало актуальный JAR
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod  # Устанавливаем профиль для Spring Boot, если необходимо
+    depends_on:
+      - postgres
+
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=menucraft'
+      - 'POSTGRES_PASSWORD=menupass'
+      - 'POSTGRES_USER=admin'
+    ports:
+      - '59870:5432'
