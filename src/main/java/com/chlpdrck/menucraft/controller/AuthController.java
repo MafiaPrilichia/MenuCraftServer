@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -28,9 +31,11 @@ public class AuthController {
     private final UserDetailsService userDetailsService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserAuthDto userAuthDto) {
+    public ResponseEntity<Map<String, String>> register(@RequestBody UserAuthDto userAuthDto) {
         if (userRepository.findByUsername(userAuthDto.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body("Пользователь с таким именем уже существует");
+            return ResponseEntity
+                    .badRequest()
+                    .body(Collections.singletonMap("error", "Пользователь с таким именем уже существует"));
         }
 
         User user = new User();
@@ -39,7 +44,7 @@ public class AuthController {
         user.setRole(Role.USER);
         userRepository.save(user);
 
-        return ResponseEntity.ok("Пользователь зарегистрирован");
+        return ResponseEntity.ok(Collections.singletonMap("message", "Пользователь зарегистрирован"));
     }
 
     @PostMapping("/login")
@@ -51,5 +56,18 @@ public class AuthController {
         String token = jwtUtil.generateToken(userDetails);
 
         return ResponseEntity.ok(token);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Map<String, String> request) {
+        String oldToken = request.get("token");
+        if (oldToken == null || !jwtUtil.validateToken(oldToken)) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Токен недействителен или истёк"));
+        }
+
+        String username = jwtUtil.extractUsername(oldToken);
+        String newToken = jwtUtil.generateToken(userDetailsService.loadUserByUsername(username));
+
+        return ResponseEntity.ok(Collections.singletonMap("token", newToken));
     }
 }

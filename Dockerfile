@@ -17,4 +17,6 @@ COPY --from=layers /application/spring-boot-loader/ ./spring-boot-loader/
 COPY --from=layers /application/snapshot-dependencies/ ./snapshot-dependencies/
 COPY --from=layers /application/application/ ./application/
 
-ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]

@@ -8,7 +8,9 @@ services:
     volumes:
       - ./target:/app  # Монтируем папку target, чтобы приложение использовало актуальный JAR
     environment:
-      - SPRING_PROFILES_ACTIVE=prod  # Устанавливаем профиль для Spring Boot, если необходимо
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/menucraft
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: menupass
     depends_on:
       - postgres
 

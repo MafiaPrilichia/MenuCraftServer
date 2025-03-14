@@ -2,7 +2,6 @@ package com.chlpdrck.menucraft.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,11 +44,15 @@ public class JwtUtil {
 
     public boolean validateToken(String token, UserDetails userDetails) {
         String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return username.equals(userDetails.getUsername()) && isTokenExpired(token);
+    }
+
+    public boolean validateToken(String token) {
+        return isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
-        return extractClaims(token).getExpiration().before(new Date());
+        return !extractClaims(token).getExpiration().before(new Date());
     }
 
     private Claims extractClaims(String token) {
