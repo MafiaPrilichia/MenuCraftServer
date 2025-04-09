@@ -72,7 +72,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventCRUDDto updateEvent(Long id, EventCRUDDto eventDto, String username) {
+    public EventDto updateEvent(Long id, EventCRUDDto eventDto, String username) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
@@ -89,7 +89,7 @@ public class EventServiceImpl implements EventService {
         event.setUpdatedAt(LocalDateTime.now());
 
         event = eventRepository.save(event);
-        return eventCRUDMapper.toEventCRUDDto(event);
+        return eventMapper.toEventDto(event);
     }
 
     @Transactional

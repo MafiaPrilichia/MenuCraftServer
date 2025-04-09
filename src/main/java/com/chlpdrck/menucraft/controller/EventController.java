@@ -52,9 +52,9 @@ public class EventController {
 
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<EventCRUDDto> updateEvent(@PathVariable Long id, @RequestBody EventCRUDDto eventCRUDDto, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<EventDto> updateEvent(@PathVariable Long id, @RequestBody EventCRUDDto eventCRUDDto, @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
-        EventCRUDDto updatedEvent = eventService.updateEvent(id, eventCRUDDto, username);
+        EventDto updatedEvent = eventService.updateEvent(id, eventCRUDDto, username);
         return ResponseEntity.ok(updatedEvent);
     }
 

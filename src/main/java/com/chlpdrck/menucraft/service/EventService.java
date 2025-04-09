@@ -10,7 +10,7 @@ public interface EventService {
 
     List<EventShortDto> getEventsByOwnerUsername(String username);
     EventCRUDDto createEvent(EventCRUDDto eventDto, String username);
-    EventCRUDDto updateEvent(Long id, EventCRUDDto eventDto, String username);
+    EventDto updateEvent(Long id, EventCRUDDto eventDto, String username);
     void deleteEvent(Long id, String username);
     EventDto getEventById(Long id, String username);
 }
