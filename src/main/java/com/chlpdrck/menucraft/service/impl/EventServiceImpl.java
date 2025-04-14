@@ -2,18 +2,16 @@ package com.chlpdrck.menucraft.service.impl;
 
 import com.chlpdrck.menucraft.entity.Event;
 import com.chlpdrck.menucraft.entity.User;
-import com.chlpdrck.menucraft.mapper.EventCRUDDto;
+import com.chlpdrck.menucraft.mapper.dto.EventCRUDDto;
 import com.chlpdrck.menucraft.mapper.EventCRUDMapper;
-import com.chlpdrck.menucraft.mapper.EventDto;
+import com.chlpdrck.menucraft.mapper.dto.EventDto;
 import com.chlpdrck.menucraft.mapper.EventMapper;
-import com.chlpdrck.menucraft.mapper.EventShortDto;
+import com.chlpdrck.menucraft.mapper.dto.EventShortDto;
 import com.chlpdrck.menucraft.mapper.EventShortMapper;
 import com.chlpdrck.menucraft.repository.EventRepository;
 import com.chlpdrck.menucraft.repository.UserRepository;
 import com.chlpdrck.menucraft.service.EventService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

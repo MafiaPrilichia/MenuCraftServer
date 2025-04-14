@@ -1,6 +1,7 @@
 package com.chlpdrck.menucraft.mapper;
 
 import com.chlpdrck.menucraft.entity.User;
+import com.chlpdrck.menucraft.mapper.dto.UserAuthDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;

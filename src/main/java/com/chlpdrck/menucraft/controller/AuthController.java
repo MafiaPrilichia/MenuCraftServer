@@ -2,7 +2,7 @@ package com.chlpdrck.menucraft.controller;
 
 import com.chlpdrck.menucraft.entity.Role;
 import com.chlpdrck.menucraft.entity.User;
-import com.chlpdrck.menucraft.mapper.UserAuthDto;
+import com.chlpdrck.menucraft.mapper.dto.UserAuthDto;
 import com.chlpdrck.menucraft.repository.UserRepository;
 import com.chlpdrck.menucraft.util.JwtUtil;
 import lombok.RequiredArgsConstructor;

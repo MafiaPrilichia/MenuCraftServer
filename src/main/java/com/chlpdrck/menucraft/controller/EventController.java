@@ -1,15 +1,14 @@
 package com.chlpdrck.menucraft.controller;
 
-import com.chlpdrck.menucraft.mapper.EventCRUDDto;
-import com.chlpdrck.menucraft.mapper.EventDto;
-import com.chlpdrck.menucraft.mapper.EventShortDto;
+import com.chlpdrck.menucraft.mapper.dto.EventCRUDDto;
+import com.chlpdrck.menucraft.mapper.dto.EventDto;
+import com.chlpdrck.menucraft.mapper.dto.EventShortDto;
 import com.chlpdrck.menucraft.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 

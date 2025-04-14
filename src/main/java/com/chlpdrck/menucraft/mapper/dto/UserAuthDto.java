@@ -1,4 +1,4 @@
-package com.chlpdrck.menucraft.mapper;
+package com.chlpdrck.menucraft.mapper.dto;
 
 import lombok.Getter;
 import lombok.Setter;

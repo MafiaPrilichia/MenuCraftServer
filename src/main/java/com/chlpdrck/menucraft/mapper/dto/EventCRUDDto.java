@@ -1,4 +1,4 @@
-package com.chlpdrck.menucraft.mapper;
+package com.chlpdrck.menucraft.mapper.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Value;

@@ -1,8 +1,8 @@
 package com.chlpdrck.menucraft.service;
 
-import com.chlpdrck.menucraft.mapper.EventCRUDDto;
-import com.chlpdrck.menucraft.mapper.EventDto;
-import com.chlpdrck.menucraft.mapper.EventShortDto;
+import com.chlpdrck.menucraft.mapper.dto.EventCRUDDto;
+import com.chlpdrck.menucraft.mapper.dto.EventDto;
+import com.chlpdrck.menucraft.mapper.dto.EventShortDto;
 
 import java.util.List;
 

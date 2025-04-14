@@ -1,8 +1,7 @@
-package com.chlpdrck.menucraft.mapper;
+package com.chlpdrck.menucraft.mapper.dto;
 
 import lombok.Value;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 /**
