@@ -30,8 +30,8 @@ public class UnitController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UnitDto> createUnit(@RequestBody UnitDto unitDto, @AuthenticationPrincipal UserDetails userDetails) {
-        UnitDto createdUnit = unitService.createUnit(unitDto, userDetails.getUsername());
+    public ResponseEntity<UnitDto> createUnit(@RequestBody UnitCRUDDto unitCRUDDto, @AuthenticationPrincipal UserDetails userDetails) {
+        UnitDto createdUnit = unitService.createUnit(unitCRUDDto, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUnit);
     }
 

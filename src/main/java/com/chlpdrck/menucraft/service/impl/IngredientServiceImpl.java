@@ -32,11 +32,18 @@ public class IngredientServiceImpl implements IngredientService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Ingredient getIngredientById(Long id) {
+        return ingredientRepository.findById(id)
+                .orElseThrow(() -> new CrudException("Ingredient doesn't exist!"));
+    }
+
     @Transactional()
     @Override
-    public IngredientDto createIngredient(IngredientDto ingredientDto, String username) {
+    public IngredientDto createIngredient(IngredientCRUDDto ingredientCRUDDto, String username) {
         if (userService.checkUserAdmin(username)) {
-            Ingredient ingredient = ingredientMapper.toEntity(ingredientDto);
+            Ingredient ingredient = ingredientMapper.toEntity(ingredientCRUDDto);
 
             ingredient = ingredientRepository.save(ingredient);
             return ingredientMapper.toIngredientDto(ingredient);

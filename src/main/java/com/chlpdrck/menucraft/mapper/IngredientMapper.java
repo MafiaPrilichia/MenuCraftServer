@@ -1,6 +1,7 @@
 package com.chlpdrck.menucraft.mapper;
 
 import com.chlpdrck.menucraft.entity.Ingredient;
+import com.chlpdrck.menucraft.mapper.dto.IngredientCRUDDto;
 import com.chlpdrck.menucraft.mapper.dto.IngredientDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -11,4 +12,8 @@ public interface IngredientMapper {
     Ingredient toEntity(IngredientDto ingredientDto);
 
     IngredientDto toIngredientDto(Ingredient ingredient);
+
+    Ingredient toEntity(IngredientCRUDDto ingredientCRUDDto);
+
+    IngredientCRUDDto toIngredientCRUDDto(Ingredient ingredient);
 }

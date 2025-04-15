@@ -170,4 +170,16 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="15042025-2058" author="mi.korotkov">
+        <addPrimaryKey
+                tableName="recipe_ingredient"
+                columnNames="recipe_id, ingredient_id"
+                constraintName="pk_recipe_ingredient"/>
+
+        <addPrimaryKey
+                tableName="event_editors"
+                columnNames="event_id, user_id"
+                constraintName="pk_event_editors"/>
+    </changeSet>
+
 </databaseChangeLog>

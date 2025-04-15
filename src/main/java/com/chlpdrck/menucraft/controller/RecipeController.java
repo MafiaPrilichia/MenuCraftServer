@@ -1,14 +1,63 @@
 package com.chlpdrck.menucraft.controller;
 
+import com.chlpdrck.menucraft.mapper.dto.RecipeCRUDDto;
+import com.chlpdrck.menucraft.mapper.dto.RecipeDto;
+import com.chlpdrck.menucraft.mapper.dto.RecipeIngredientCRUDDto;
+import com.chlpdrck.menucraft.mapper.dto.RecipeIngredientDto;
+import com.chlpdrck.menucraft.service.RecipeIngredientService;
+import com.chlpdrck.menucraft.service.RecipeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/recipe")
 @RequiredArgsConstructor
 public class RecipeController {
 
+    private final RecipeService recipeService;
+    private final RecipeIngredientService recipeIngredientService;
 
+
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<RecipeDto>> getAllRecipes() {
+        List<RecipeDto> recipes = recipeService.getAllRecipes();
+        return ResponseEntity.ok(recipes);
+    }
+
+    @PostMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<RecipeDto> createRecipe(@RequestBody RecipeCRUDDto recipeCRUDDto, @AuthenticationPrincipal UserDetails userDetails) {
+        RecipeDto createdRecipe = recipeService.createRecipe(recipeCRUDDto, userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdRecipe);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<RecipeDto> updateRecipe(@PathVariable Long id, @RequestBody RecipeCRUDDto recipeCRUDDto, @AuthenticationPrincipal UserDetails userDetails) {
+        RecipeDto updatedRecipe = recipeService.updateRecipe(id, recipeCRUDDto, userDetails.getUsername());
+        return ResponseEntity.ok(updatedRecipe);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteRecipe(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        recipeService.deleteRecipe(id, userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/add-ing")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<RecipeIngredientDto> createRecipeIngredient(@RequestBody RecipeIngredientCRUDDto recipeIngredientCRUDDto, @AuthenticationPrincipal UserDetails userDetails) {
+        RecipeIngredientDto createdRecipeIngredient = recipeIngredientService.createRecipeIngredient(recipeIngredientCRUDDto, userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdRecipeIngredient);
+    }
 
 }

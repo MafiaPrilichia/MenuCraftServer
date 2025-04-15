@@ -3,11 +3,9 @@ package com.chlpdrck.menucraft.service.impl;
 import com.chlpdrck.menucraft.entity.Event;
 import com.chlpdrck.menucraft.entity.User;
 import com.chlpdrck.menucraft.mapper.dto.EventCRUDDto;
-import com.chlpdrck.menucraft.mapper.EventCRUDMapper;
 import com.chlpdrck.menucraft.mapper.dto.EventDto;
 import com.chlpdrck.menucraft.mapper.EventMapper;
 import com.chlpdrck.menucraft.mapper.dto.EventShortDto;
-import com.chlpdrck.menucraft.mapper.EventShortMapper;
 import com.chlpdrck.menucraft.repository.EventRepository;
 import com.chlpdrck.menucraft.repository.UserRepository;
 import com.chlpdrck.menucraft.service.EventService;
@@ -25,8 +23,6 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-    private final EventShortMapper eventShortMapper;
-    private final EventCRUDMapper eventCRUDMapper;
     private final EventMapper eventMapper;
 
     @Transactional(readOnly = true)
@@ -37,7 +33,7 @@ public class EventServiceImpl implements EventService {
 
         return eventRepository.findByOwner(owner)
                 .stream()
-                .map(eventShortMapper::toEventShortDto)
+                .map(eventMapper::toEventShortDto)
                 .collect(Collectors.toList());
     }
 
@@ -60,12 +56,12 @@ public class EventServiceImpl implements EventService {
         var owner = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Event event = eventCRUDMapper.toEntity(eventDto);
+        Event event = eventMapper.toEntity(eventDto);
         event.setOwner(owner);
         event.setCreatedAt(LocalDateTime.now());
 
         event = eventRepository.save(event);
-        return eventCRUDMapper.toEventCRUDDto(event);
+        return eventMapper.toEventCRUDDto(event);
     }
 
     @Transactional

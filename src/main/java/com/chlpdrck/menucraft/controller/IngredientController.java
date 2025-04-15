@@ -29,8 +29,8 @@ public class IngredientController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<IngredientDto> createIngredient(@RequestBody IngredientDto ingredientDto, @AuthenticationPrincipal UserDetails userDetails) {
-        IngredientDto createdIngredient = ingredientService.createIngredient(ingredientDto, userDetails.getUsername());
+    public ResponseEntity<IngredientDto> createIngredient(@RequestBody IngredientCRUDDto ingredientCRUDDto, @AuthenticationPrincipal UserDetails userDetails) {
+        IngredientDto createdIngredient = ingredientService.createIngredient(ingredientCRUDDto, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdIngredient);
     }
 
