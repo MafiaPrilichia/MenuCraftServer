@@ -2,7 +2,6 @@ package com.chlpdrck.menucraft.service.impl;
 
 import com.chlpdrck.menucraft.entity.Unit;
 import com.chlpdrck.menucraft.exception.CrudException;
-import com.chlpdrck.menucraft.mapper.UnitCRUDMapper;
 import com.chlpdrck.menucraft.mapper.UnitMapper;
 import com.chlpdrck.menucraft.mapper.dto.UnitCRUDDto;
 import com.chlpdrck.menucraft.mapper.dto.UnitDto;
@@ -23,7 +22,6 @@ public class UnitServiceImpl implements UnitService {
     private final UserService userService;
     private final UnitRepository unitRepository;
     private final UnitMapper unitMapper;
-    private final UnitCRUDMapper unitCRUDMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -45,7 +43,7 @@ public class UnitServiceImpl implements UnitService {
     @Override
     public UnitDto createUnit(UnitCRUDDto unitCRUDDto, String username) {
         if (userService.checkUserAdmin(username)) {
-            Unit unit = unitCRUDMapper.toEntity(unitCRUDDto);
+            Unit unit = unitMapper.toEntity(unitCRUDDto);
 
             unit = unitRepository.save(unit);
             return unitMapper.toUnitDto(unit);
