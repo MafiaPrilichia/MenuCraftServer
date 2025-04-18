@@ -1,18 +1,23 @@
 package com.chlpdrck.menucraft.service.impl;
 
+import com.chlpdrck.menucraft.entity.Ingredient;
 import com.chlpdrck.menucraft.entity.RecipeIngredient;
+import com.chlpdrck.menucraft.entity.RecipeIngredientId;
+import com.chlpdrck.menucraft.entity.Unit;
 import com.chlpdrck.menucraft.exception.CrudException;
+import com.chlpdrck.menucraft.mapper.IngredientMapper;
 import com.chlpdrck.menucraft.mapper.RecipeIngredientMapper;
-import com.chlpdrck.menucraft.mapper.dto.RecipeDto;
-import com.chlpdrck.menucraft.mapper.dto.RecipeIngredientCRUDDto;
-import com.chlpdrck.menucraft.mapper.dto.RecipeIngredientDto;
+import com.chlpdrck.menucraft.mapper.UnitMapper;
+import com.chlpdrck.menucraft.mapper.dto.*;
 import com.chlpdrck.menucraft.repository.RecipeIngredientRepository;
 import com.chlpdrck.menucraft.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -24,25 +29,40 @@ public class RecipeIngredientServiceImpl implements RecipeIngredientService {
     private final UserService userService;
     private final IngredientService ingredientService;
     private final UnitService unitService;
+    private final IngredientMapper ingredientMapper;
+    private final UnitMapper unitMapper;
 
 
-//    @Transactional(readOnly = true)
-//    @Override
-//    public List<RecipeDto> getAllIngredientsByRecipe() {
-//        return recipeRepository.findAll()
-//                .stream()
-//                .map(recipeMapper::toRecipeDto)
-//                .collect(Collectors.toList());
-//    }
-//
-//    @Transactional(readOnly = true)
-//    @Override
-//    public RecipeDto getRecipeById(Long id) {
-//        Recipe recipe = recipeRepository.findById(id)
-//                .orElseThrow(() -> new CrudException("Category doesn't exist!"));
-//
-//        return recipeMapper.toRecipeDto(recipe);
-//    }
+    @Transactional(readOnly = true)
+    @Override
+    public List<RecipeIngredientShowDto> getAllRecipeIngredientByRecipeId(Long recipeId, String username) {
+        RecipeDto recipe = recipeService.getRecipeById(recipeId);
+
+        if (!Objects.equals(userService.getUserById(recipe.getUser().getId()).getUsername(), username)
+                && !userService.checkUserAdmin(username)) {
+            throw new CrudException("User can't change this recipe!");
+        }
+
+        List<RecipeIngredient> recipeIngredients = recipeIngredientRepository.findAllById_RecipeId(recipeId);
+
+        return recipeIngredients.stream()
+                .map(entity -> {
+                    Ingredient ingredient = ingredientService.getIngredientById(entity.getId().getIngredientId());
+
+                    IngredientDto ingredientDto = ingredientMapper.toIngredientDto(ingredient);
+                    UnitDto unitDto = unitMapper.toUnitDto(entity.getUnit());
+
+                    RecipeIngredientShowDto dto = new RecipeIngredientShowDto(
+                            recipe.getId(),
+                            ingredientDto,
+                            unitDto,
+                            entity.getAmount()
+                    );
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
     @Transactional()
     @Override
@@ -67,45 +87,43 @@ public class RecipeIngredientServiceImpl implements RecipeIngredientService {
         return recipeIngredientMapper.toRecipeIngredientDto(recipeIngredient);
     }
 
-//    @Transactional()
-//    @Override
-//    public RecipeDto updateRecipeIngredient(Long id, RecipeCRUDDto recipeCRUDDto, String username) {
-//        if (!Objects.equals(userService.getUserById(recipeCRUDDto.getUserId()).getUsername(), username)
-//                && !userService.checkUserAdmin(username)) {
-//            throw new CrudException("User can't change this recipe!");
-//        }
-//
-//        Recipe recipe = recipeRepository.findById(id)
-//                .orElseThrow(() -> new CrudException("Recipe not found"));
-//
-//        recipe.setName(recipeCRUDDto.getName());
-//        recipe.setDescription(recipeCRUDDto.getDescription());
-//        recipe.setServings(recipeCRUDDto.getServings());
-//        recipe.setCookingTime(recipeCRUDDto.getCookingTime());
-//
-//        User user = userService.getUserById(recipeCRUDDto.getUserId());
-//        recipe.setUser(user);
-//
-//        Category category = categoryService.getCategoryById(recipeCRUDDto.getCategoryId());
-//        recipe.setCategory(category);
-//
-//        recipe = recipeRepository.save(recipe);
-//
-//        return recipeMapper.toRecipeDto(recipe);
-//    }
+    @Transactional()
+    @Override
+    public RecipeIngredientDto updateRecipeIngredient(RecipeIngredientCRUDDto recipeIngredientCRUDDto, String username) {
+        RecipeIngredient recipeIngredient = recipeIngredientRepository.findById(new RecipeIngredientId(recipeIngredientCRUDDto.getRecipeId(), recipeIngredientCRUDDto.getIngredientId()))
+                .orElseThrow(() -> new CrudException("RecipeIngredient for update doesn't find!"));
 
-//    @Transactional()
-//    @Override
-//    public void deleteRecipe(Long id, String username) {
-//        Recipe recipe = recipeRepository.findById(id)
-//                .orElseThrow(() -> new CrudException("Recipe for delete doesn't find!"));
-//
-//        if (!Objects.equals(userService.getUserById(recipe.getId()).getUsername(), username)
-//                && !userService.checkUserAdmin(username)) {
-//            throw new CrudException("User can't delete this recipe!");
-//        }
-//
-//        recipeRepository.delete(recipe);
-//    }
+        RecipeDto recipe = recipeService.getRecipeById(recipeIngredient.getId().getRecipeId());
+        if (!Objects.equals(userService.getUserById(recipe.getUser().getId()).getUsername(), username)
+                && !userService.checkUserAdmin(username)) {
+            throw new CrudException("User can't change this recipe!");
+        }
+
+        ingredientService.getIngredientById(recipeIngredient.getId().getIngredientId());
+        Unit unit = unitService.getUnitById(recipeIngredientCRUDDto.getUnitId());
+
+        recipeIngredient.setUnit(unit);
+        recipeIngredient.setAmount(recipeIngredientCRUDDto.getAmount());
+
+        recipeIngredient = recipeIngredientRepository.save(recipeIngredient);
+
+        return recipeIngredientMapper.toRecipeIngredientDto(recipeIngredient);
+    }
+
+    @Transactional()
+    @Override
+    public void deleteRecipeIngredient(Long recipeId, Long ingredientId, String username) {
+        RecipeIngredient recipeIngredient = recipeIngredientRepository.findById(new RecipeIngredientId(recipeId, ingredientId))
+                .orElseThrow(() -> new CrudException("RecipeIngredient for update doesn't find!"));
+
+        RecipeDto recipe = recipeService.getRecipeById(recipeIngredient.getId().getRecipeId());
+        if (!Objects.equals(userService.getUserById(recipe.getId()).getUsername(), username)
+                && !userService.checkUserAdmin(username)) {
+            throw new CrudException("User can't delete this recipe!");
+        }
+        ingredientService.getIngredientById(recipeIngredient.getId().getIngredientId());
+
+        recipeIngredientRepository.delete(recipeIngredient);
+    }
 
 }
