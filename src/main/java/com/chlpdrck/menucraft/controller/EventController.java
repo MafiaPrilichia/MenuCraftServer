@@ -1,8 +1,7 @@
 package com.chlpdrck.menucraft.controller;
 
-import com.chlpdrck.menucraft.mapper.dto.EventCRUDDto;
-import com.chlpdrck.menucraft.mapper.dto.EventDto;
-import com.chlpdrck.menucraft.mapper.dto.EventShortDto;
+import com.chlpdrck.menucraft.mapper.dto.*;
+import com.chlpdrck.menucraft.service.EventRecipeService;
 import com.chlpdrck.menucraft.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +19,7 @@ import java.util.List;
 public class EventController {
 
     private final EventService eventService;
+    private final EventRecipeService eventRecipeService;
 
     @GetMapping("/owned")
     @PreAuthorize("isAuthenticated()")
@@ -62,6 +62,41 @@ public class EventController {
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
         eventService.deleteEvent(id, username);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/recipe/{eventId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<EventRecipeShowDto>> getAllRecipesByEvent(@PathVariable Long eventId, @AuthenticationPrincipal UserDetails userDetails) {
+        List<EventRecipeShowDto> eventRecipes = eventRecipeService.getAllEventRecipeByEventId(eventId, userDetails.getUsername());
+        return ResponseEntity.ok(eventRecipes);
+    }
+
+    @GetMapping("/ingredient/{eventId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<EventIngredientShowDto>> getAllIngredientsByEvent(@PathVariable Long eventId, @AuthenticationPrincipal UserDetails userDetails) {
+        List<EventIngredientShowDto> eventIngredients = eventRecipeService.getAllIngredientByEventId(eventId, userDetails.getUsername());
+        return ResponseEntity.ok(eventIngredients);
+    }
+
+    @PostMapping("/recipe")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<EventRecipeDto> createEventRecipe(@RequestBody EventRecipeDto eventRecipeDto, @AuthenticationPrincipal UserDetails userDetails) {
+        EventRecipeDto createdEventRecipe = eventRecipeService.createEventRecipe(eventRecipeDto, userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdEventRecipe);
+    }
+
+    @PutMapping("/recipe")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<EventRecipeDto> updateRecipeIngredient(@RequestBody EventRecipeDto eventRecipeDto, @AuthenticationPrincipal UserDetails userDetails) {
+        EventRecipeDto updatedEventRecipe = eventRecipeService.updateEventRecipe(eventRecipeDto, userDetails.getUsername());
+        return ResponseEntity.ok(updatedEventRecipe);
+    }
+
+    @DeleteMapping("/recipe")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteEventRecipe(@RequestParam Long eventId, @RequestParam Long recipeId, @AuthenticationPrincipal UserDetails userDetails) {
+        eventRecipeService.deleteEventRecipe(eventId, recipeId, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
 

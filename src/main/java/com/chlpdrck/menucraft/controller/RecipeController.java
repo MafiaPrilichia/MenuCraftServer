@@ -24,15 +24,16 @@ public class RecipeController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<RecipeDto>> getAllRecipes() {
-        List<RecipeDto> recipes = recipeService.getAllRecipes();
+    public ResponseEntity<List<RecipeDto>> getAllRecipes(@AuthenticationPrincipal UserDetails userDetails) {
+        List<RecipeDto> recipes = recipeService.getAllRecipes(userDetails.getUsername());
         return ResponseEntity.ok(recipes);
     }
 
-    @GetMapping
+    @GetMapping("/user")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<RecipeDto>> getAllRecipes(String username) {
-        List<RecipeDto> recipes = recipeService.getAllRecipes();
+    public ResponseEntity<List<RecipeDto>> getAllRecipesForUser(@AuthenticationPrincipal UserDetails userDetails,
+                                                                @RequestParam(required = false) List<Long> categoryIds) {
+        List<RecipeDto> recipes = recipeService.getAllRecipesForUser(userDetails.getUsername(), categoryIds);
         return ResponseEntity.ok(recipes);
     }
 

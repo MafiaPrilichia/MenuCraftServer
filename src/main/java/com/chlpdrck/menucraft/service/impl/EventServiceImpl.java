@@ -9,6 +9,7 @@ import com.chlpdrck.menucraft.mapper.dto.EventShortDto;
 import com.chlpdrck.menucraft.repository.EventRepository;
 import com.chlpdrck.menucraft.repository.UserRepository;
 import com.chlpdrck.menucraft.service.EventService;
+import com.chlpdrck.menucraft.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EventMapper eventMapper;
+    private final UserService userService;
 
     @Transactional(readOnly = true)
     @Override
@@ -43,11 +45,26 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
-        if (!event.getOwner().getUsername().equals(username)) {
+        if (!event.getOwner().getUsername().equals(username)
+                && !userService.checkUserAdmin(username)) {
             throw new RuntimeException("Unauthorized to look on this event");
         }
 
         return eventMapper.toEventDto(event);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Event getEventEntityById(Long id, String username) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        if (!event.getOwner().getUsername().equals(username)
+                && !userService.checkUserAdmin(username)) {
+            throw new RuntimeException("Unauthorized to look on this event");
+        }
+
+        return event;
     }
 
     @Transactional
@@ -70,7 +87,8 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
-        if (!event.getOwner().getUsername().equals(username)) {
+        if (!event.getOwner().getUsername().equals(username)
+                && !userService.checkUserAdmin(username)) {
             throw new RuntimeException("Unauthorized to update this event");
         }
 
@@ -92,7 +110,8 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
-        if (!event.getOwner().getUsername().equals(username)) {
+        if (!event.getOwner().getUsername().equals(username)
+                && !userService.checkUserAdmin(username)) {
             throw new RuntimeException("Unauthorized to delete this event");
         }
 

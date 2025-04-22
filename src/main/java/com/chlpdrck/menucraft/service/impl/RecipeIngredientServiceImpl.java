@@ -38,11 +38,6 @@ public class RecipeIngredientServiceImpl implements RecipeIngredientService {
     public List<RecipeIngredientShowDto> getAllRecipeIngredientByRecipeId(Long recipeId, String username) {
         RecipeDto recipe = recipeService.getRecipeById(recipeId);
 
-        if (!Objects.equals(userService.getUserById(recipe.getUser().getId()).getUsername(), username)
-                && !userService.checkUserAdmin(username)) {
-            throw new CrudException("User can't change this recipe!");
-        }
-
         List<RecipeIngredient> recipeIngredients = recipeIngredientRepository.findAllById_RecipeId(recipeId);
 
         return recipeIngredients.stream()
@@ -52,14 +47,12 @@ public class RecipeIngredientServiceImpl implements RecipeIngredientService {
                     IngredientDto ingredientDto = ingredientMapper.toIngredientDto(ingredient);
                     UnitDto unitDto = unitMapper.toUnitDto(entity.getUnit());
 
-                    RecipeIngredientShowDto dto = new RecipeIngredientShowDto(
+                    return new RecipeIngredientShowDto(
                             recipe.getId(),
                             ingredientDto,
                             unitDto,
                             entity.getAmount()
                     );
-
-                    return dto;
                 })
                 .collect(Collectors.toList());
     }

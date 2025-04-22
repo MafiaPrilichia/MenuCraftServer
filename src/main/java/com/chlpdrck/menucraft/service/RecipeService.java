@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface RecipeService {
 
-    List<RecipeDto> getAllRecipes();
+    List<RecipeDto> getAllRecipes(String username);
+    List<RecipeDto> getAllRecipesForUser(String username, List<Long> categoryIds);
     RecipeDto getRecipeById(Long id);
     RecipeDto createRecipe(RecipeCRUDDto recipeCRUDDto, String username);
     RecipeDto updateRecipe(Long id, RecipeCRUDDto recipeCRUDDto, String username);

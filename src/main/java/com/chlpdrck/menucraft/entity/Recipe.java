@@ -34,4 +34,7 @@ public class Recipe {
     @Column(name = "cooking_time")
     private Integer cookingTime;
 
+    @Column(name = "is_public")
+    private Boolean isPublic;
+
 }

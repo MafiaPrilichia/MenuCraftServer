@@ -14,4 +14,5 @@ public class RecipeDto {
     String description;
     Integer servings;
     Integer cookingTime;
+    Boolean isPublic;
 }

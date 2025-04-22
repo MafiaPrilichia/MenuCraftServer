@@ -182,4 +182,45 @@
                 constraintName="pk_event_editors"/>
     </changeSet>
 
+    <changeSet id="18042025-2017" author="mi.korotkov">
+        <addColumn tableName="recipe">
+            <column name="is_public" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="18042025-2306" author="mi.korotkov">
+        <createTable tableName="event_recipe">
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recipe_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="portions" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey
+                tableName="event_recipe"
+                columnNames="event_id, recipe_id"
+                constraintName="pk_event_recipe"/>
+
+        <addForeignKeyConstraint
+                baseTableName="event_recipe"
+                baseColumnNames="event_id"
+                constraintName="fk_event_recipe_event"
+                referencedTableName="event"
+                referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="event_recipe"
+                baseColumnNames="recipe_id"
+                constraintName="fk_event_recipe_recipe"
+                referencedTableName="recipe"
+                referencedColumnNames="id"/>
+    </changeSet>
+
 </databaseChangeLog>
