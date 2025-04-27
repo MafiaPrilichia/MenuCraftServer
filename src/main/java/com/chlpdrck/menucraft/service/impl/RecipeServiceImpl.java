@@ -71,6 +71,10 @@ eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQ1MDAxNDc0LCJleHAiOjE3NDUzNjE
     public RecipeDto createRecipe(RecipeCRUDDto recipeCRUDDto, String username) {
         Recipe recipe = recipeMapper.toEntity(recipeCRUDDto);
 
+        if (recipeCRUDDto.getUserId() == null) {
+            recipeCRUDDto.setUserId(userService.getUserByUsername(username).getId());
+        }
+
         if (!Objects.equals(userService.getUserById(recipeCRUDDto.getUserId()).getUsername(), username)
                 && !userService.checkUserAdmin(username)) {
             throw new CrudException("User can't create recipe for another user!");

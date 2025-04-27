@@ -1,11 +1,14 @@
 package com.chlpdrck.menucraft.mapper.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 
 /**
  * DTO for {@link com.chlpdrck.menucraft.entity.Recipe}
  */
-@Value
+@Getter
+@Setter
 public class RecipeCRUDDto {
     Long userId;
     Long categoryId;

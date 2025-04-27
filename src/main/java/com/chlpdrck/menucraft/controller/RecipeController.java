@@ -37,6 +37,13 @@ public class RecipeController {
         return ResponseEntity.ok(recipes);
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<RecipeDto> getRecipeById(@PathVariable Long id) {
+        RecipeDto recipe = recipeService.getRecipeById(id);
+        return ResponseEntity.ok(recipe);
+    }
+
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RecipeDto> createRecipe(@RequestBody RecipeCRUDDto recipeCRUDDto, @AuthenticationPrincipal UserDetails userDetails) {
