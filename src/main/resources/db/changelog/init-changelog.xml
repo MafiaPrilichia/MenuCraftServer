@@ -223,4 +223,55 @@
                 referencedColumnNames="id"/>
     </changeSet>
 
+    <changeSet id="03052025-2230" author="mi.korotkov">
+        <dropForeignKeyConstraint
+                baseTableName="event_recipe"
+                constraintName="fk_event_recipe_recipe"/>
+
+        <addForeignKeyConstraint
+                baseTableName="event_recipe"
+                baseColumnNames="recipe_id"
+                constraintName="fk_event_recipe_recipe"
+                referencedTableName="recipe"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <dropForeignKeyConstraint
+                baseTableName="event_recipe"
+                constraintName="fk_event_recipe_event"/>
+
+        <addForeignKeyConstraint
+                baseTableName="event_recipe"
+                baseColumnNames="event_id"
+                constraintName="fk_event_recipe_event"
+                referencedTableName="event"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <dropForeignKeyConstraint
+                baseTableName="recipe_ingredient"
+                constraintName="fk_recipe_ingredient_recipe"/>
+
+        <addForeignKeyConstraint
+                baseTableName="recipe_ingredient"
+                baseColumnNames="recipe_id"
+                constraintName="fk_recipe_ingredient_recipe"
+                referencedTableName="recipe"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <dropForeignKeyConstraint
+                baseTableName="recipe_ingredient"
+                constraintName="fk_recipe_ingredient_ingredient"/>
+
+        <addForeignKeyConstraint
+                baseTableName="recipe_ingredient"
+                baseColumnNames="ingredient_id"
+                constraintName="fk_recipe_ingredient_ingredient"
+                referencedTableName="ingredient"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+
 </databaseChangeLog>

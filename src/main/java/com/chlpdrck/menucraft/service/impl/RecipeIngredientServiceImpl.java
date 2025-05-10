@@ -35,7 +35,7 @@ public class RecipeIngredientServiceImpl implements RecipeIngredientService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<RecipeIngredientShowDto> getAllRecipeIngredientByRecipeId(Long recipeId, String username) {
+    public List<RecipeIngredientShowDto> getAllRecipeIngredientByRecipeId(Long recipeId) {
         RecipeDto recipe = recipeService.getRecipeById(recipeId);
 
         List<RecipeIngredient> recipeIngredients = recipeIngredientRepository.findAllById_RecipeId(recipeId);
@@ -110,13 +110,21 @@ public class RecipeIngredientServiceImpl implements RecipeIngredientService {
                 .orElseThrow(() -> new CrudException("RecipeIngredient for update doesn't find!"));
 
         RecipeDto recipe = recipeService.getRecipeById(recipeIngredient.getId().getRecipeId());
-        if (!Objects.equals(userService.getUserById(recipe.getId()).getUsername(), username)
+        if (!Objects.equals(userService.getUserById(recipe.getUser().getId()).getUsername(), username)
                 && !userService.checkUserAdmin(username)) {
             throw new CrudException("User can't delete this recipe!");
         }
         ingredientService.getIngredientById(recipeIngredient.getId().getIngredientId());
 
         recipeIngredientRepository.delete(recipeIngredient);
+    }
+
+    @Transactional()
+    @Override
+    public void saveRecipeIngredientFromRecipe(Long oldRecipeId, Long newRecipeId) {
+        List<RecipeIngredient> recipeIngredients = recipeIngredientRepository.findAllById_RecipeId(oldRecipeId);
+        recipeIngredients.forEach(entity -> entity.getId().setRecipeId(newRecipeId));
+        recipeIngredientRepository.saveAll(recipeIngredients);
     }
 
 }

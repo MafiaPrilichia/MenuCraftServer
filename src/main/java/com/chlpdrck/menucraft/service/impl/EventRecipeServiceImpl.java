@@ -1,9 +1,10 @@
 package com.chlpdrck.menucraft.service.impl;
 
-import com.chlpdrck.menucraft.entity.*;
+import com.chlpdrck.menucraft.entity.Event;
+import com.chlpdrck.menucraft.entity.EventRecipe;
+import com.chlpdrck.menucraft.entity.EventRecipeId;
 import com.chlpdrck.menucraft.exception.CrudException;
 import com.chlpdrck.menucraft.mapper.EventRecipeMapper;
-import com.chlpdrck.menucraft.mapper.UnitMapper;
 import com.chlpdrck.menucraft.mapper.dto.*;
 import com.chlpdrck.menucraft.repository.EventRecipeRepository;
 import com.chlpdrck.menucraft.service.*;
@@ -70,7 +71,7 @@ public class EventRecipeServiceImpl implements EventRecipeService {
         for (EventRecipe er : eventRecipes) {
             RecipeDto recipe = recipeService.getRecipeById(er.getId().getRecipeId());
 
-            for (RecipeIngredientShowDto ri : recipeIngredientService.getAllRecipeIngredientByRecipeId(recipe.getId(), username)) {
+            for (RecipeIngredientShowDto ri : recipeIngredientService.getAllRecipeIngredientByRecipeId(recipe.getId())) {
                 IngredientDto ingredientDto = ri.getIngredient();
                 Long unitId = ri.getUnit().getId();
                 String key = ingredientDto.getId() + "_" + unitId;

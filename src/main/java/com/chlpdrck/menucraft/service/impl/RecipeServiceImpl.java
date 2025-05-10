@@ -1,19 +1,17 @@
 package com.chlpdrck.menucraft.service.impl;
 
-import com.chlpdrck.menucraft.entity.Category;
-import com.chlpdrck.menucraft.entity.Recipe;
-import com.chlpdrck.menucraft.entity.Unit;
-import com.chlpdrck.menucraft.entity.User;
+import com.chlpdrck.menucraft.entity.*;
 import com.chlpdrck.menucraft.exception.CrudException;
 import com.chlpdrck.menucraft.mapper.RecipeMapper;
 import com.chlpdrck.menucraft.mapper.dto.RecipeCRUDDto;
 import com.chlpdrck.menucraft.mapper.dto.RecipeDto;
+import com.chlpdrck.menucraft.repository.RecipeIngredientRepository;
 import com.chlpdrck.menucraft.repository.RecipeRepository;
 import com.chlpdrck.menucraft.service.CategoryService;
-import com.chlpdrck.menucraft.service.IngredientService;
 import com.chlpdrck.menucraft.service.RecipeService;
 import com.chlpdrck.menucraft.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,15 +21,14 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class RecipeServiceImpl implements RecipeService {
-/*
-eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMSIsImlhdCI6MTc0NTAwMTQxMCwiZXhwIjoxNzQ1MzYxNDEwfQ.I1_vtdzr74FtOLSIMQV2y9SXQmiZysqB6INC4pWX4RJmW5m614ilDlUIcee10v7GcZpaxCnpjRLQ7y7JtaJlzg
-eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQ1MDAxNDc0LCJleHAiOjE3NDUzNjE0NzR9.6U72lCDHMfENWqBXjPJr_w_v0kPg7CDAnDbZAeDnWRGvmjNkByjazTykGPiLq-81zEc4OXwfSXEZ-qNsVk7_KA
-*/
+
     private final RecipeRepository recipeRepository;
     private final RecipeMapper recipeMapper;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final RecipeIngredientRepository recipeIngredientRepository;
 
 
     @Transactional(readOnly = true)
@@ -124,11 +121,64 @@ eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQ1MDAxNDc0LCJleHAiOjE3NDUzNjE
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new CrudException("Recipe for delete doesn't find!"));
 
-        if (!Objects.equals(userService.getUserById(recipe.getId()).getUsername(), username)
+        if (!Objects.equals(userService.getUserById(recipe.getUser().getId()).getUsername(), username)
                 && !userService.checkUserAdmin(username)) {
             throw new CrudException("User can't delete this recipe!");
         }
 
         recipeRepository.delete(recipe);
     }
+
+    @Transactional
+    @Override
+    public Long saveRecipeFromAnotherUser(Long recipeId, String username) {
+        log.info("Попытка сохранить рецепт с ID {} для пользователя {}", recipeId, username);
+
+        Recipe originalRecipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> {
+                    log.error("Рецепт с ID {} не найден", recipeId);
+                    return new CrudException("Recipe not found");
+                });
+
+        String originalAuthor = userService.getUserById(originalRecipe.getUser().getId()).getUsername();
+        log.info("Оригинальный автор рецепта: {}", originalAuthor);
+
+        if (Objects.equals(originalAuthor, username) && !userService.checkUserAdmin(username)) {
+            log.warn("Пользователь {} не имеет прав сохранять этот рецепт", username);
+            throw new CrudException("This user created the recipe!");
+        }
+
+        // Создание новой копии рецепта вручную
+        Recipe newRecipe = new Recipe();
+        newRecipe.setUser(userService.getUserByUsername(username));
+        newRecipe.setCategory(originalRecipe.getCategory());
+        newRecipe.setName(originalRecipe.getName());
+        newRecipe.setDescription(originalRecipe.getDescription());
+        newRecipe.setServings(originalRecipe.getServings());
+        newRecipe.setCookingTime(originalRecipe.getCookingTime());
+        newRecipe.setIsPublic(false);
+
+        Recipe savedRecipe = recipeRepository.save(newRecipe);
+        log.info("Создан новый рецепт с ID {} от имени пользователя {}", savedRecipe.getId(), username);
+
+        List<RecipeIngredient> recipeIngredients = recipeIngredientRepository.findAllById_RecipeId(recipeId);
+        log.info("Найдено {} ингредиентов для копирования", recipeIngredients.size());
+
+        // Создание новых объектов RecipeIngredient с новым ключом
+        List<RecipeIngredient> newIngredients = recipeIngredients.stream()
+                .map(old -> {
+                    RecipeIngredient newIngredient = new RecipeIngredient();
+                    newIngredient.setId(new RecipeIngredientId(savedRecipe.getId(), old.getId().getIngredientId()));
+                    newIngredient.setUnit(old.getUnit());
+                    newIngredient.setAmount(old.getAmount());
+                    return newIngredient;
+                }).toList();
+
+        recipeIngredientRepository.saveAll(newIngredients);
+        log.info("Ингредиенты успешно сохранены для нового рецепта");
+
+        return savedRecipe.getId();
+    }
+
+
 }

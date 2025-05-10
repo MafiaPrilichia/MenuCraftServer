@@ -4,6 +4,7 @@ import com.chlpdrck.menucraft.mapper.dto.*;
 import com.chlpdrck.menucraft.service.RecipeIngredientService;
 import com.chlpdrck.menucraft.service.RecipeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/recipe")
 @RequiredArgsConstructor
+@Slf4j
 public class RecipeController {
 
     private final RecipeService recipeService;
@@ -68,7 +70,7 @@ public class RecipeController {
     @GetMapping("/ingredient/{recipeId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<RecipeIngredientShowDto>> getAllIngredientsByRecipe(@PathVariable Long recipeId, @AuthenticationPrincipal UserDetails userDetails) {
-        List<RecipeIngredientShowDto> recipeIngredients = recipeIngredientService.getAllRecipeIngredientByRecipeId(recipeId, userDetails.getUsername());
+        List<RecipeIngredientShowDto> recipeIngredients = recipeIngredientService.getAllRecipeIngredientByRecipeId(recipeId);
         return ResponseEntity.ok(recipeIngredients);
     }
 
@@ -93,4 +95,11 @@ public class RecipeController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/another/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Long> saveRecipeFromAnotherUser(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("Попытка сохранить рецепт с ID {}", id);
+        Long newRecipeId = recipeService.saveRecipeFromAnotherUser(id, userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.CREATED).body(newRecipeId);
+    }
 }

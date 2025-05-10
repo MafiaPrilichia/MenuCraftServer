@@ -13,5 +13,5 @@ public interface RecipeService {
     RecipeDto createRecipe(RecipeCRUDDto recipeCRUDDto, String username);
     RecipeDto updateRecipe(Long id, RecipeCRUDDto recipeCRUDDto, String username);
     void deleteRecipe(Long id, String username);
-
+    Long saveRecipeFromAnotherUser(Long recipeId, String username);
 }
